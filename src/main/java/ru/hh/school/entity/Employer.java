@@ -1,24 +1,36 @@
 package ru.hh.school.entity;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
+import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
-//TODO: оформите entity
+// DONE: оформите entity
+@Entity
 public class Employer {
-
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "employer_id")
   private Integer id;
 
+  @Column(name = "company_name", nullable = false)
   private String companyName;
 
   // не используйте java.util.Date
   // https://docs.jboss.org/hibernate/orm/5.3/userguide/html_single/Hibernate_User_Guide.html#basic-datetime-java8
+  @Column(name = "creation_time")
   private LocalDateTime creationTime;
 
+  @OneToMany(mappedBy = "employer", cascade = CascadeType.ALL)
   private List<Vacancy> vacancies = new ArrayList<>();
 
+  @Column(name = "block_time")
   private LocalDateTime blockTime;
+
+  public Employer() {}
 
   public List<Vacancy> getVacancies() {
     return vacancies;
@@ -53,12 +65,19 @@ public class Employer {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     Employer employer = (Employer) o;
-    return Objects.equals(companyName, employer.companyName);
+
+    EqualsBuilder eb = new EqualsBuilder();
+    eb.append(companyName, employer.companyName);
+
+    return eb.isEquals();
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(companyName);
+    HashCodeBuilder hb = new HashCodeBuilder();
+    hb.append(companyName);
+
+    return hb.toHashCode();
   }
 
 }
